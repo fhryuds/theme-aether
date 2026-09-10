@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = ${post.spec.title} + ' - ' + ${site.title}, content = ~{::content}, description = ${post.status.excerpt})}">
+<th:block th:fragment="content">
+
+  <div class="post-layout">
+    <!-- 左侧所有文章列表 -->
+    <aside class="post-sidebar" th:with="allPosts = ${postFinder.list(1, 20).items}">
+      <div class="post-sidebar__card">
+        <h3 class="post-sidebar__title">所有文章</h3>
+        <ul class="post-sidebar__list">
+          <li th:each="p, ps : ${allPosts}">
+            <a th:href="${p.status.permalink}"
+               th:classappend="${p.metadata.name == post.metadata.name} ? ' is-current' : ''">
+              <span class="num" th:text="${ps.count}">01</span>
+              <span class="txt" th:text="${p.spec.title}">文章标题</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- 中间正文 -->
+    <article class="post-detail post-detail--with-toc">
+      <header class="post-detail__header">
+        <div class="post-detail__cats" th:if="${not #lists.isEmpty(post.categories)}">
+          <a class="chip chip--a" th:each="cat : ${post.categories}"
+             th:href="${cat.status.permalink}"
+             th:text="${cat.spec.displayName}">分类</a>
+        </div>
+
+        <h1 class="post-detail__title type-title"
+            th:attr="data-title=${post.spec.title}"
+            aria-label="文章标题"></h1>
+
+        <div class="post-detail__meta">
+          <th:block th:if="${post.owner != null}">
+            <img class="avatar" th:if="${post.owner.avatar}" th:src="${post.owner.avatar}" alt=""/>
+            <span th:text="${post.owner.displayName}">作者</span>
+            <span class="sep">·</span>
+          </th:block>
+          <span th:text="${#dates.format(post.spec.publishTime, 'yyyy-MM-dd')}">2026-01-01</span>
+          <span class="sep">·</span>
+          <span th:text="${post.stats?.visit} + ' 阅读'">0 阅读</span>
+          <span class="sep">·</span>
+          <span th:text="${post.status.commentsCount} + ' 评论'">0 评论</span>
+        </div>
+      </header>
+
+      <div class="post-detail__cover" th:if="${post.spec.cover != null and post.spec.cover != ''}">
+        <img th:src="${post.spec.cover}" th:alt="${post.spec.title}"/>
+      </div>
+
+      <!-- 正文 -->
+      <div class="content" id="post-content" th:utext="${post.content.content}">
+        正文内容
+      </div>
+
+      <!-- 底部信息 -->
+      <footer class="post-detail__footer">
+        <div class="post-detail__tags" th:if="${not #lists.isEmpty(post.tags)}">
+          <a class="tag-chip" th:each="tag : ${post.tags}"
+             th:href="${tag.status.permalink}"
+             th:text="${tag.spec.displayName}">标签</a>
+        </div>
+
+        <div class="post-nav" th:with="cursor = ${postFinder.cursor(post.metadata.name)}">
+          <a class="post-nav__link" th:if="${cursor.hasPrevious()}"
+             th:href="${cursor.previous.status.permalink}">
+            <span class="post-nav__label">上一篇</span>
+            <span class="post-nav__title" th:text="${cursor.previous.spec.title}">上一篇标题</span>
+          </a>
+          <span class="post-nav__link" th:unless="${cursor.hasPrevious()}"></span>
+
+          <a class="post-nav__link post-nav__link--next" th:if="${cursor.hasNext()}"
+             th:href="${cursor.next.status.permalink}">
+            <span class="post-nav__label">下一篇</span>
+            <span class="post-nav__title" th:text="${cursor.next.spec.title}">下一篇标题</span>
+          </a>
+          <span class="post-nav__link post-nav__link--next" th:unless="${cursor.hasNext()}"></span>
+        </div>
+      </footer>
+    </article>
+
+    <!-- 右侧目录侧边栏 -->
+    <aside class="post-toc">
+      <div class="post-toc__inner">
+        <p class="post-toc__title">目录</p>
+        <nav class="post-toc__nav" id="post-toc-nav" aria-label="文章目录">
+          <!-- 由 JS 动态生成 -->
+        </nav>
+      </div>
+    </aside>
+  </div>
+
+</th:block>
+</html>

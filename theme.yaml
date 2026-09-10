@@ -1,0 +1,21 @@
+apiVersion: theme.halo.run/v1alpha1
+kind: Theme
+metadata:
+  name: theme-aether
+spec:
+  displayName: Aether 苍穹
+  author:
+    name: fhertyu
+    website: https://github.com/fhryuds
+  description: 一款清新青绿、杂志式排版、文档级阅读体验的个人博客主题。
+  logo: /themes/theme-aether/assets/images/screenshot.png
+  homepage: https://github.com/fhryuds/halo-theme-aether
+  repo: https://github.com/fhryuds/halo-theme-aether.git
+  issues: https://github.com/fhryuds/halo-theme-aether/issues
+  settingName: "theme-aether-setting"
+  configMapName: "theme-aether-configMap"
+  version: "1.0.0"
+  requires: ">=2.20.0"
+  license:
+    - name: "MIT"
+      url: "https://github.com/fhryuds/halo-theme-aether/blob/main/LICENSE"

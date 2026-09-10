@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = '归档 - ' + ${site.title}, content = ~{::content})}">
+<th:block th:fragment="content">
+
+  <header class="page-head">
+    <h1 class="page-head__title">归档</h1>
+    <p class="page-head__sub" th:text="${archives.total} + ' 篇文章'">共 0 篇文章</p>
+  </header>
+
+  <div class="container container--narrow" style="padding-bottom: 64px;">
+    <th:block th:each="archive : ${archives.items}">
+      <section class="archive-group">
+        <h2 class="archive-group__year" th:text="${archive.year}">2026</h2>
+        <th:block th:each="month : ${archive.months}">
+          <ul class="archive-group__list">
+            <li class="archive-item" th:each="post : ${month.posts}">
+              <span class="archive-item__date"
+                    th:text="${#dates.format(post.spec.publishTime, 'MM-dd')}">01-01</span>
+              <a class="archive-item__title" th:href="${post.status.permalink}"
+                 th:text="${post.spec.title}">标题</a>
+            </li>
+          </ul>
+        </th:block>
+      </section>
+    </th:block>
+
+    <div class="empty" th:if="${#lists.isEmpty(archives.items)}">
+      <div class="empty__icon">✎</div>
+      <p>还没有文章。</p>
+    </div>
+
+    <!-- 分页 -->
+    <nav class="pagination" th:if="${archives.hasPrevious() or archives.hasNext()}">
+      <a class="pagination__btn" th:if="${archives.hasPrevious()}" th:href="@{${archives.prevUrl}}">上一页</a>
+      <span class="pagination__btn is-disabled" th:unless="${archives.hasPrevious()}">上一页</span>
+      <span class="pagination__info" th:text="${archives.page} + ' / ' + ${archives.totalPages}">1 / 1</span>
+      <a class="pagination__btn" th:if="${archives.hasNext()}" th:href="@{${archives.nextUrl}}">下一页</a>
+      <span class="pagination__btn is-disabled" th:unless="${archives.hasNext()}">下一页</span>
+    </nav>
+  </div>
+
+</th:block>
+</html>

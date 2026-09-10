@@ -1,0 +1,14 @@
+<footer class="site-footer" th:fragment="footer" xmlns:th="http://www.thymeleaf.org"
+        th:with="cfg = ${theme.config != null ? theme.config.basic : null}">
+  <div class="footer__inner">
+    <p class="footer__text">
+      <span th:text="'© ' + (${cfg != null and cfg.copyright_year != null} ? ${cfg.copyright_year} : '2026')">© 2026</span>
+      <span th:text="${cfg != null and cfg.site_name != null and cfg.site_name != ''} ? ${cfg.site_name} : ${site.title}">站点名称</span>
+      <span th:if="${cfg != null and cfg.icp != null and cfg.icp != ''}" th:text="' · ' + ${cfg.icp}">备案号</span>
+      <span th:if="${cfg != null and cfg.gongan != null and cfg.gongan != ''}" th:text="' · ' + ${cfg.gongan}">公安备案</span>
+    </p>
+    <div class="footer__links">
+      <a href="https://github.com/fhryuds/halo-theme-aether" target="_blank" rel="noopener">Powered by fhertyu | Aether</a>
+    </div>
+  </div>
+</footer>

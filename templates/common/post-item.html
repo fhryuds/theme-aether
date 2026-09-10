@@ -1,0 +1,33 @@
+<th:block th:fragment="postItem (post, index)" xmlns:th="http://www.thymeleaf.org">
+  <article class="post-card">
+    <a class="post-card__media" th:href="${post.status.permalink}">
+      <img th:if="${post.spec.cover}" th:src="${post.spec.cover}" th:alt="${post.spec.title}"/>
+      <span class="post-card__media--empty" th:unless="${post.spec.cover}"
+            th:text="${#strings.substring(post.spec.title, 0, 1)}">A</span>
+    </a>
+    <div class="post-card__body">
+      <div class="post-card__meta">
+        <span th:text="${#dates.format(post.spec.publishTime, 'yyyy-MM-dd')}">2026-01-01</span>
+      </div>
+      <h3 class="post-card__title">
+        <a th:href="${post.status.permalink}" th:text="${post.spec.title}">标题</a>
+      </h3>
+      <p class="post-card__excerpt" th:text="${post.status.excerpt}">摘要</p>
+      <div class="post-card__foot">
+        <div class="post-card__cats" th:if="${not #lists.isEmpty(post.categories)}">
+          <a class="chip chip--a" th:each="cat : ${post.categories}"
+             th:href="${cat.status.permalink}"
+             th:text="${cat.spec.displayName}">分类</a>
+        </div>
+        <span class="post-card__readtime">
+          <th:block th:if="${post.owner != null}">
+            <img class="avatar" th:if="${post.owner.avatar}" th:src="${post.owner.avatar}" alt=""/>
+            <span th:text="${post.owner.displayName}">作者</span>
+            <span class="sep">·</span>
+          </th:block>
+          <span th:text="${post.stats?.visit} + ' 阅读'">0 阅读</span>
+        </span>
+      </div>
+    </div>
+  </article>
+</th:block>

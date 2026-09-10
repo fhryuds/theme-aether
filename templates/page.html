@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = ${page.spec.title} + ' - ' + ${site.title}, content = ~{::content})}">
+<th:block th:fragment="content">
+
+  <article class="post-detail">
+    <header class="post-detail__header">
+      <h1 class="post-detail__title" th:text="${page.spec.title}">页面标题</h1>
+    </header>
+
+    <div class="content" th:utext="${page.content.content}">
+      页面内容
+    </div>
+  </article>
+
+</th:block>
+</html>

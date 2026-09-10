@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = ${site.title}, content = ~{::content})}">
+<th:block th:fragment="content">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero__inner">
+      <p class="hero__eyebrow" th:text="${site.subtitle} != null ? ${site.subtitle} : 'BLOG'">BLOG</p>
+      <h1 class="hero__title">
+        <span th:text="${site.title}">我的博客</span>
+        <span class="grad">.</span>
+      </h1>
+      <p class="hero__bio"
+         th:text="${theme.config != null and theme.config.basic != null and theme.config.basic.author_bio != null} ? ${theme.config.basic.author_bio} : '记录思考，分享生活。'">记录思考，分享生活。</p>
+      <div class="hero__stats" th:with="cats = ${categoryFinder.listAll()}, ts = ${tagFinder.listAll()}">
+        <div class="hero__stat">
+          <span class="hero__stat-num" th:text="${posts.total}">0</span>
+          <span class="hero__stat-label">篇文章</span>
+        </div>
+        <div class="hero__stat">
+          <span class="hero__stat-num" th:text="${#lists.size(cats)}">0</span>
+          <span class="hero__stat-label">个分类</span>
+        </div>
+        <div class="hero__stat">
+          <span class="hero__stat-num" th:text="${#lists.size(ts)}">0</span>
+          <span class="hero__stat-label">个标签</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 文章列表 + 侧边栏 -->
+  <div class="index-layout">
+    <!-- 主内容区 -->
+    <div class="index-layout__main">
+      <div class="section-head">
+        <h2 class="section-head__title">最新文章</h2>
+        <a class="section-head__more" th:href="@{${site.url} + '/archives'}">查看全部 →</a>
+      </div>
+
+      <th:block th:if="${#lists.isEmpty(posts.items)}">
+        <div class="empty">
+          <div class="empty__icon">✎</div>
+          <p>还没有文章，敬请期待。</p>
+        </div>
+      </th:block>
+
+      <!-- 布局模式：staggered = 双栏错落（默认），grid = 均匀网格 -->
+      <div class="post-grid post-grid--staggered"
+           th:if="${not #lists.isEmpty(posts.items)}">
+        <th:block th:each="post, st : ${posts.items}">
+          <!-- 首篇：大卡片（跨两列） -->
+          <article class="post-card post-card--feature"
+                   th:if="${posts.first and st.first}">
+            <a class="post-card__media" th:href="${post.status.permalink}">
+              <span class="post-card__badge">最新发布</span>
+              <img th:if="${post.spec.cover}" th:src="${post.spec.cover}" th:alt="${post.spec.title}"/>
+              <span class="post-card__media--empty" th:unless="${post.spec.cover}"
+                    th:text="${#strings.substring(post.spec.title, 0, 1)}">A</span>
+            </a>
+            <div class="post-card__body">
+              <div class="post-card__meta">
+                <span th:text="${#dates.format(post.spec.publishTime, 'yyyy年MM月dd日')}">2026年01月01日</span>
+                <span class="sep">·</span>
+                <span th:text="${post.stats?.visit} + ' 阅读'">0 阅读</span>
+              </div>
+              <h3 class="post-card__title">
+                <a th:href="${post.status.permalink}" th:text="${post.spec.title}">标题</a>
+              </h3>
+              <p class="post-card__excerpt" th:text="${post.status.excerpt}">摘要</p>
+              <div class="post-card__foot">
+                <div class="post-card__cats">
+                  <a class="chip chip--a" th:each="cat : ${post.categories}"
+                     th:href="${cat.status.permalink}"
+                     th:text="${cat.spec.displayName}">分类</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 普通卡片 -->
+          <article class="post-card" th:unless="${posts.first and st.first}">
+            <a class="post-card__media" th:href="${post.status.permalink}">
+              <img th:if="${post.spec.cover}" th:src="${post.spec.cover}" th:alt="${post.spec.title}"/>
+              <span class="post-card__media--empty" th:unless="${post.spec.cover}"
+                    th:text="${#strings.substring(post.spec.title, 0, 1)}">A</span>
+            </a>
+            <div class="post-card__body">
+              <div class="post-card__meta">
+                <span th:text="${#dates.format(post.spec.publishTime, 'yyyy-MM-dd')}">2026-01-01</span>
+              </div>
+              <h3 class="post-card__title">
+                <a th:href="${post.status.permalink}" th:text="${post.spec.title}">标题</a>
+              </h3>
+              <p class="post-card__excerpt" th:text="${post.status.excerpt}">摘要</p>
+              <div class="post-card__foot">
+                <div class="post-card__cats" th:if="${not #lists.isEmpty(post.categories)}">
+                  <a class="chip chip--a" th:each="cat : ${post.categories}"
+                     th:href="${cat.status.permalink}"
+                     th:text="${cat.spec.displayName}">分类</a>
+                </div>
+                <span class="post-card__readtime">
+                  <th:block th:if="${post.owner != null}">
+                    <img class="avatar" th:if="${post.owner.avatar}" th:src="${post.owner.avatar}" alt=""/>
+                    <span th:text="${post.owner.displayName}">作者</span>
+                    <span class="sep">·</span>
+                  </th:block>
+                  <span th:text="${post.stats?.visit} + ' 阅读'">0 阅读</span>
+                </span>
+              </div>
+            </div>
+          </article>
+        </th:block>
+      </div>
+
+      <!-- 分页 -->
+      <th:block th:replace="~{common/pagination :: pagination (${posts})}"/>
+    </div>
+
+    <!-- 侧边栏 -->
+    <th:block th:replace="~{common/sidebar :: sidebar}"/>
+  </div>
+
+</th:block>
+</html>

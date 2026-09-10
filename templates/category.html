@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = ${category.spec.displayName} + ' - ' + ${site.title}, content = ~{::content})}">
+<th:block th:fragment="content">
+
+  <header class="page-head">
+    <h1 class="page-head__title" th:text="${category.spec.displayName}">分类名</h1>
+    <p class="page-head__sub" th:if="${category.spec.description != null and category.spec.description != ''}"
+       th:text="${category.spec.description}">分类描述</p>
+    <p class="page-head__sub" th:text="${posts.total} + ' 篇文章'">共 0 篇文章</p>
+  </header>
+
+  <div class="post-list">
+    <div class="post-grid post-grid--staggered" th:if="${not #lists.isEmpty(posts.items)}">
+      <th:block th:each="post, st : ${posts.items}">
+        <th:block th:replace="~{common/post-item :: postItem (${post}, ${st.count})}"/>
+      </th:block>
+    </div>
+
+    <div class="empty" th:if="${#lists.isEmpty(posts.items)}">
+      <div class="empty__icon">✎</div>
+      <p>该分类下还没有文章。</p>
+    </div>
+
+    <!-- 分页 -->
+    <nav class="pagination" th:if="${posts.hasPrevious() or posts.hasNext()}">
+      <a class="pagination__btn" th:if="${posts.hasPrevious()}" th:href="@{${posts.prevUrl}}">上一页</a>
+      <span class="pagination__btn is-disabled" th:unless="${posts.hasPrevious()}">上一页</span>
+      <span class="pagination__info" th:text="${posts.page} + ' / ' + ${posts.totalPages}">1 / 1</span>
+      <a class="pagination__btn" th:if="${posts.hasNext()}" th:href="@{${posts.nextUrl}}">下一页</a>
+      <span class="pagination__btn is-disabled" th:unless="${posts.hasNext()}">下一页</span>
+    </nav>
+  </div>
+
+</th:block>
+</html>

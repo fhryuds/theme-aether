@@ -1,0 +1,59 @@
+<aside class="sidebar" th:fragment="sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       th:with="cats = ${categoryFinder.listAll()}, ts = ${tagFinder.listAll()}">
+
+  <!-- 个人简介 -->
+  <div class="sidebar__card profile-card">
+    <img class="profile-card__avatar"
+         th:if="${theme.config != null and theme.config.basic != null and theme.config.basic.author_avatar != null and theme.config.basic.author_avatar != ''}"
+         th:src="${theme.config.basic.author_avatar}" alt=""/>
+    <div class="profile-card__avatar--empty"
+         th:unless="${theme.config != null and theme.config.basic != null and theme.config.basic.author_avatar != null and theme.config.basic.author_avatar != ''}"
+         th:text="${#strings.isEmpty(site.title) ? 'A' : #strings.substring(site.title, 0, 1)}">A</div>
+    <h3 class="profile-card__name" th:text="${site.title}">站点名</h3>
+    <p class="profile-card__bio"
+       th:text="${theme.config != null and theme.config.basic != null and theme.config.basic.author_bio != null} ? ${theme.config.basic.author_bio} : ''">个人简介</p>
+    <div class="profile-card__social">
+      <a th:if="${theme.config != null and theme.config.basic != null and theme.config.basic.nav_github != null and theme.config.basic.nav_github != ''}"
+         th:href="${theme.config.basic.nav_github}"
+         target="_blank" rel="noopener" title="GitHub">Git</a>
+      <a th:if="${theme.config != null and theme.config.basic != null and theme.config.basic.nav_twitter != null and theme.config.basic.nav_twitter != ''}"
+         th:href="${theme.config.basic.nav_twitter}"
+         target="_blank" rel="noopener" title="社交">@</a>
+    </div>
+  </div>
+
+  <!-- 文章分类 -->
+  <div class="sidebar__card" th:if="${not #lists.isEmpty(cats)}">
+    <h3 class="sidebar__title">文章分类</h3>
+    <ul class="cat-list">
+      <li class="cat-list__item" th:each="cat : ${cats}">
+        <a class="cat-list__name" th:href="${cat.status.permalink}">
+          <span class="cat-list__dot"></span>
+          <span th:text="${cat.spec.displayName}">分类</span>
+        </a>
+        <span class="cat-list__count" th:text="${cat.postCount}">0</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 快捷入口 -->
+  <div class="sidebar__card">
+    <h3 class="sidebar__title">归档</h3>
+    <ul class="sidebar__links">
+      <li><a th:href="@{${site.url} + '/archives'}"><span>文章归档</span><span class="arrow">→</span></a></li>
+      <li><a th:href="@{${site.url} + '/tags'}"><span>标签云</span><span class="arrow">→</span></a></li>
+      <li><a th:href="@{${site.url} + '/categories'}"><span>全部分类</span><span class="arrow">→</span></a></li>
+    </ul>
+  </div>
+
+  <!-- 标签云 -->
+  <div class="sidebar__card" th:if="${not #lists.isEmpty(ts)}">
+    <h3 class="sidebar__title">标签</h3>
+    <div class="sidebar__tags">
+      <a th:each="tag : ${ts}" th:href="${tag.status.permalink}"
+         th:text="${tag.spec.displayName}">标签</a>
+    </div>
+  </div>
+
+</aside>

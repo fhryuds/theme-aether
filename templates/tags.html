@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = '标签 - ' + ${site.title}, content = ~{::content})}">
+<th:block th:fragment="content" th:with="allTags = ${tagFinder.listAll()}">
+
+  <header class="page-head">
+    <h1 class="page-head__title">标签</h1>
+    <p class="page-head__sub" th:text="${#lists.size(allTags)} + ' 个标签'">共 0 个标签</p>
+  </header>
+
+  <div class="tag-cloud" th:if="${not #lists.isEmpty(allTags)}">
+    <a class="tag-cloud__item" th:each="tag : ${allTags}" th:href="${tag.status.permalink}">
+      <span th:text="${tag.spec.displayName}">标签</span>
+      <span class="count" th:text="${tag.postCount}">0</span>
+    </a>
+  </div>
+
+  <div class="empty" th:if="${#lists.isEmpty(allTags)}">
+    <div class="empty__icon">#</div>
+    <p>还没有标签。</p>
+  </div>
+
+</th:block>
+</html>

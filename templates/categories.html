@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout (title = '分类 - ' + ${site.title}, content = ~{::content})}">
+<th:block th:fragment="content" th:with="allCats = ${categoryFinder.listAll()}">
+
+  <header class="page-head">
+    <h1 class="page-head__title">分类</h1>
+    <p class="page-head__sub" th:text="${#lists.size(allCats)} + ' 个分类'">共 0 个分类</p>
+  </header>
+
+  <div class="tag-cloud" th:if="${not #lists.isEmpty(allCats)}">
+    <a class="tag-cloud__item" th:each="cat : ${allCats}" th:href="${cat.status.permalink}">
+      <span th:text="${cat.spec.displayName}">分类</span>
+      <span class="count" th:text="${cat.postCount}">0</span>
+    </a>
+  </div>
+
+  <div class="empty" th:if="${#lists.isEmpty(allCats)}">
+    <div class="empty__icon">▤</div>
+    <p>还没有分类。</p>
+  </div>
+
+</th:block>
+</html>

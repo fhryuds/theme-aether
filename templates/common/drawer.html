@@ -1,0 +1,19 @@
+<th:block th:fragment="drawer" xmlns:th="http://www.thymeleaf.org">
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+  <aside class="drawer" id="drawer">
+    <div class="nav__actions" style="justify-content: flex-end;">
+      <button class="nav__icon-btn" id="drawer-close" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <ul class="drawer__links">
+      <li><a th:href="@{${site.url}}">首页</a></li>
+      <li><a th:href="@{${site.url} + '/archives'}">归档</a></li>
+      <li><a th:href="@{${site.url} + '/categories'}">分类</a></li>
+      <li><a th:href="@{${site.url} + '/tags'}">标签</a></li>
+    </ul>
+  </aside>
+</th:block>

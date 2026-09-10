@@ -1,0 +1,10 @@
+<nav class="pagination" th:fragment="pagination (posts)" xmlns:th="http://www.thymeleaf.org"
+     th:if="${posts.hasPrevious() or posts.hasNext()}">
+  <a class="pagination__btn" th:if="${posts.hasPrevious()}" th:href="@{${posts.prevUrl}}">上一页</a>
+  <span class="pagination__btn is-disabled" th:unless="${posts.hasPrevious()}">上一页</span>
+
+  <span class="pagination__info" th:text="${posts.page} + ' / ' + ${posts.totalPages}">1 / 1</span>
+
+  <a class="pagination__btn" th:if="${posts.hasNext()}" th:href="@{${posts.nextUrl}}">下一页</a>
+  <span class="pagination__btn is-disabled" th:unless="${posts.hasNext()}">下一页</span>
+</nav>

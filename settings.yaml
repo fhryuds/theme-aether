@@ -1,0 +1,75 @@
+apiVersion: v1alpha1
+kind: Setting
+metadata:
+  name: theme-aether-setting
+spec:
+  forms:
+    - group: basic
+      label: 基础设置
+      formSchema:
+        - $formkit: text
+          name: accent_color
+          label: 强调色
+          value: "#0d9488"
+          help: 主题的点睛色，用于链接、按钮、选中态等。默认清新青绿。
+        - $formkit: text
+          name: author_bio
+          label: 个人简介
+          value: "记录思考，分享生活。"
+          help: 显示在首页头部与侧边栏的个人签名。
+        - $formkit: text
+          name: author_avatar
+          label: 头像地址
+          help: 可留空，留空时使用站点 Logo。
+        - $formkit: text
+          name: nav_github
+          label: GitHub 链接
+          help: 显示在导航栏的 GitHub 图标链接，可留空。
+        - $formkit: text
+          name: nav_twitter
+          label: 社交链接
+          help: 显示在导航栏的社交图标链接，可留空。
+        - $formkit: text
+          name: site_name
+          label: 站点名称
+          help: 显示在页脚版权位置（© 后）。留空则使用站点标题。
+        - $formkit: text
+          name: copyright_year
+          label: 版权年份
+          value: "2026"
+          help: 页脚版权符号 © 后面的年份，可手动设置。
+        - $formkit: text
+          name: icp
+          label: 备案号
+          help: ICP 备案号，显示在站点名称后面，可留空。
+        - $formkit: text
+          name: gongan
+          label: 公安备案号
+          help: 公安备案号，显示在备案号后面，可留空。
+    - group: layout
+      label: 布局设置
+      formSchema:
+        - $formkit: radio
+          name: index_layout
+          label: 首页布局
+          value: "staggered"
+          options:
+            - value: "staggered"
+              label: 双栏错落（杂志封面式）
+            - value: "grid"
+              label: 均匀卡片网格
+            - value: "list"
+              label: 纯净列表
+        - $formkit: checkbox
+          name: show_excerpt
+          label: 首页显示摘要
+          value: true
+        - $formkit: checkbox
+          name: show_toc
+          label: 文章显示目录
+          value: true
+        - $formkit: text
+          name: page_size
+          label: 每页文章数
+          value: "10"
+          help: 首页每页展示的文章数量。
