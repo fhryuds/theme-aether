@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
-      th:fragment="layout">
+      th:fragment="html (head, content)">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -21,6 +21,7 @@
   <th:block th:if="${site.logo} != null and ${site.logo} != ''">
     <link rel="icon" th:href="@{${site.logo}}"/>
   </th:block>
+  <th:block th:replace="${head}"/>
 </head>
 <body>
   <th:block th:replace="~{common/header :: header}"/>

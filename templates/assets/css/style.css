@@ -754,6 +754,10 @@ ul, ol { padding-left: 1.4em; }
   align-items: start;
 }
 
+/* 关键：允许栅格子项收缩到轨道宽度以下，防止正文里的超长代码/URL
+   把中栏撑爆、溢出压到右侧透明目录底下（重叠“透视”的根因） */
+.post-layout > * { min-width: 0; }
+
 /* 三栏顺序：左「所有文章」→ 中「正文」→ 右「目录」 */
 .post-sidebar { order: 1; }
 .post-detail--with-toc { order: 2; }
@@ -766,6 +770,8 @@ ul, ol { padding-left: 1.4em; }
 }
 .post-toc__inner {
   padding: 8px 0;
+  min-width: 0;
+  max-width: 100%;
 }
 .post-toc__title {
   font-size: 13px;
@@ -781,6 +787,8 @@ ul, ol { padding-left: 1.4em; }
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
+  max-width: 100%;
 }
 .post-toc__nav a {
   position: relative;
@@ -792,7 +800,11 @@ ul, ol { padding-left: 1.4em; }
   border-left: 2px solid transparent;
   margin-left: -1px;
   transition: all var(--dur) var(--ease);
+  /* 长标题/连续中文也要换行 + 不能撑出容器 */
   word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  min-width: 0;
 }
 .post-toc__nav a:hover {
   color: var(--accent);
@@ -814,13 +826,17 @@ ul, ol { padding-left: 1.4em; }
   padding-left: 12px;
 }
 
-/* 文章正文（带目录时） */
-.post-detail--with-toc { padding: 40px 0 40px; }
+/* 文章正文（带目录时）
+   margin:0 + max-width:none 是关键：auto 外边距会让 grid 子项放弃 stretch、
+   改按 fit-content 取宽，长代码的 min-content 会把它撑出轨道压到右侧目录下。
+   选择器带 .post-layout 提升权重，避免被后面的 .post-detail 基础规则覆盖 */
+.post-layout .post-detail--with-toc { padding: 40px 0 40px; margin: 0; max-width: none; }
 
 /* 右侧「所有文章」列表 */
 .post-sidebar {
   position: sticky;
   top: 88px;
+  min-width: 0;
 }
 .post-sidebar__card {
   background: var(--bg-elevated);
@@ -884,6 +900,9 @@ ul, ol { padding-left: 1.4em; }
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  min-width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .post-detail { max-width: var(--max-w); margin: 0 auto; padding: 56px 24px 88px; }
@@ -946,6 +965,7 @@ ul, ol { padding-left: 1.4em; }
   font-size: 17px;
   line-height: 1.9;
   color: var(--ink);
+  overflow-wrap: break-word;
 }
 .content > *:first-child { margin-top: 0; }
 .content h1, .content h2, .content h3, .content h4 {
@@ -1006,7 +1026,13 @@ ul, ol { padding-left: 1.4em; }
 [data-theme="dark"] .content pre { background: #0b0c12; }
 .content pre code { background: transparent; color: inherit; padding: 0; font-size: 1em; }
 
-.content img { border-radius: var(--radius); margin: 1.8em auto; box-shadow: var(--shadow-sm); }
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  margin: 1.8em auto;
+  box-shadow: var(--shadow-sm);
+}
 
 .content table { width: 100%; border-collapse: collapse; margin: 1.8em 0; font-size: 15px; }
 .content th, .content td { padding: 11px 15px; border: 1px solid var(--line); text-align: left; }
@@ -1238,6 +1264,35 @@ ul, ol { padding-left: 1.4em; }
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
 }
 .drawer.is-open { right: 0; }
+.drawer__profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+.drawer__avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+}
+.drawer__profile-text { min-width: 0; }
+.drawer__name { margin: 0 0 4px; font-weight: 700; font-size: 16px; }
+.drawer__bio {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
 .drawer__links { list-style: none; margin: 24px 0 0; padding: 0; }
 .drawer__links li { margin: 4px 0; }
 .drawer__links a {

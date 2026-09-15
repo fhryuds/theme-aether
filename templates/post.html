@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout (title = ${post.spec.title} + ' - ' + ${site.title}, content = ~{::content}, description = ${post.status.excerpt})}">
+      th:replace="~{layout :: html (title = ${post.spec.title} + ' - ' + ${site.title}, head = ~{::head}, content = ~{::content}, description = ${post.status.excerpt})}">
+<th:block th:fragment="head">
+  <meta property="og:type" content="article"/>
+  <meta property="og:title" th:attr="content=${post.spec.title}"/>
+  <meta property="og:description" th:if="${post.status.excerpt}" th:attr="content=${post.status.excerpt}"/>
+</th:block>
 <th:block th:fragment="content">
 
   <div class="post-layout">

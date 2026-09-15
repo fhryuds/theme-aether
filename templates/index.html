@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout (title = ${site.title}, content = ~{::content})}">
+      th:replace="~{layout :: html (title = ${site.title}, head = ~{::head}, content = ~{::content})}">
+<th:block th:fragment="head"></th:block>
 <th:block th:fragment="content">
 
   <!-- Hero -->

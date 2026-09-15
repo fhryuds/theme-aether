@@ -17,10 +17,14 @@ spec:
           label: 个人简介
           value: "记录思考，分享生活。"
           help: 显示在首页头部与侧边栏的个人签名。
-        - $formkit: text
+        - $formkit: attachment
           name: author_avatar
-          label: 头像地址
-          help: 可留空，留空时使用站点 Logo。
+          label: 头像（从媒体库选择）
+          help: 点击从 Halo 附件库选择或上传头像，顶部导航、抽屉菜单与侧边栏同步生效。
+        - $formkit: text
+          name: author_avatar_url
+          label: 头像（外链地址）
+          help: 也可以直接填写图片 URL；两者同时填写时优先使用媒体库选择的头像。
         - $formkit: text
           name: nav_github
           label: GitHub 链接

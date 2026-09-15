@@ -3,12 +3,16 @@
        th:with="cats = ${categoryFinder.listAll()}, ts = ${tagFinder.listAll()}">
 
   <!-- 个人简介 -->
-  <div class="sidebar__card profile-card">
+  <div class="sidebar__card profile-card"
+       th:with="avatarImg=${theme.config?.basic?.author_avatar}, avatarUrl=${theme.config?.basic?.author_avatar_url}">
     <img class="profile-card__avatar"
-         th:if="${theme.config != null and theme.config.basic != null and theme.config.basic.author_avatar != null and theme.config.basic.author_avatar != ''}"
-         th:src="${theme.config.basic.author_avatar}" alt=""/>
+         th:if="${not #strings.isEmpty(avatarImg)}"
+         th:src="${avatarImg}" alt=""/>
+    <img class="profile-card__avatar"
+         th:if="${#strings.isEmpty(avatarImg) and not #strings.isEmpty(avatarUrl)}"
+         th:src="${avatarUrl}" alt=""/>
     <div class="profile-card__avatar--empty"
-         th:unless="${theme.config != null and theme.config.basic != null and theme.config.basic.author_avatar != null and theme.config.basic.author_avatar != ''}"
+         th:if="${#strings.isEmpty(avatarImg) and #strings.isEmpty(avatarUrl)}"
          th:text="${#strings.isEmpty(site.title) ? 'A' : #strings.substring(site.title, 0, 1)}">A</div>
     <h3 class="profile-card__name" th:text="${site.title}">站点名</h3>
     <p class="profile-card__bio"

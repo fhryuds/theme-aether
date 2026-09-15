@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout (title = '标签 - ' + ${site.title}, content = ~{::content})}">
+      th:replace="~{layout :: html (title = '标签 - ' + ${site.title}, head = ~{::head}, content = ~{::content})}">
+<th:block th:fragment="head"></th:block>
 <th:block th:fragment="content" th:with="allTags = ${tagFinder.listAll()}">
 
   <header class="page-head">
