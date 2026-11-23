@@ -65,6 +65,11 @@ spec:
             - value: "list"
               label: 纯净列表
         - $formkit: checkbox
+          name: index_sort_by_time
+          label: 首页按发布时间严格排序
+          value: true
+          help: 开启后首页严格按发布时间倒序排列，「最新发布」一定是真正最新的一篇；关闭则恢复 Halo 默认排序（置顶文章优先）。
+        - $formkit: checkbox
           name: show_excerpt
           label: 首页显示摘要
           value: true

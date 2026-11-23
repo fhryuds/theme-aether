@@ -1,0 +1,13 @@
+# 本地预览页（不发布）
+.preview/
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# 构建产物
+*.zip
+node_modules/

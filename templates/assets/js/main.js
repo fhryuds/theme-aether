@@ -153,4 +153,191 @@
       tocNav.innerHTML = '<span class="post-toc__empty">本文无小标题</span>';
     }
   }
+  /* ---- 全站搜索（前端即时检索，索引由模板渲染注入） ---- */
+  var searchModal = document.getElementById("search-modal");
+  var searchInput = document.getElementById("search-input");
+  var searchResults = document.getElementById("search-results");
+  var searchHint = document.getElementById("search-hint");
+  var searchCount = document.getElementById("search-count");
+  var searchIndex = document.getElementById("aether-search-data");
+
+  if (searchModal && searchInput && searchResults && searchIndex) {
+    var entries = [];
+    searchIndex.querySelectorAll("a").forEach(function (a) {
+      var titleEl = a.querySelector(".s-title");
+      var excerptEl = a.querySelector(".s-excerpt");
+      var cats = [];
+      a.querySelectorAll(".s-cat").forEach(function (c) { cats.push(c.textContent.trim()); });
+      var tags = [];
+      a.querySelectorAll(".s-tag").forEach(function (t) { tags.push(t.textContent.trim()); });
+
+      var title = titleEl ? titleEl.textContent.trim() : "";
+      var excerpt = excerptEl ? excerptEl.textContent.trim() : "";
+      entries.push({
+        url: a.getAttribute("href"),
+        date: a.getAttribute("data-date") || "",
+        title: title,
+        excerpt: excerpt,
+        cats: cats,
+        tags: tags,
+        haystack: (title + " " + excerpt + " " + cats.join(" ") + " " + tags.join(" ")).toLowerCase()
+      });
+    });
+
+    var activeIndex = -1;
+    var hits = [];
+
+    // 按发布日期倒序，保证搜索结果最新的在前
+    entries.sort(function (a, b) { return b.date.localeCompare(a.date); });
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    // 高亮匹配片段：先转义，再用「一次性合并正则」单遍替换，
+    // 避免二次替换命中自己插入的 <mark> 标签导致 HTML 破坏。
+    function highlight(text, terms) {
+      var safe = escapeHtml(text);
+      if (!terms.length) return safe;
+      var pattern = terms
+        .filter(Boolean)
+        .map(function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); })
+        .join("|");
+      if (!pattern) return safe;
+      return safe.replace(new RegExp("(" + pattern + ")", "gi"), "<mark>$1</mark>");
+    }
+
+    function render(terms) {
+      var list = terms.length
+        ? entries.filter(function (e) {
+            return terms.every(function (t) { return e.haystack.indexOf(t) !== -1; });
+          })
+        : [];
+
+      hits = list;
+      activeIndex = -1;
+
+      if (!terms.length) {
+        searchResults.innerHTML = "";
+        searchHint.textContent = "输入关键词开始搜索，支持多个关键词（空格分隔）";
+        searchCount.textContent = "";
+        return;
+      }
+
+      if (!list.length) {
+        searchResults.innerHTML =
+          '<div class="search-empty"><div class="search-empty__icon">⌕</div>' +
+          '<p>没有找到与「' + escapeHtml(terms.join(" ")) + '」相关的文章。</p></div>';
+        searchHint.textContent = "";
+        searchCount.textContent = "0 篇";
+        return;
+      }
+
+      searchHint.textContent = "";
+      searchCount.textContent = list.length + " 篇结果";
+
+      var html = "";
+      list.slice(0, 30).forEach(function (e, i) {
+        var meta = [];
+        if (e.date) meta.push('<span class="s-date">' + escapeHtml(e.date) + "</span>");
+        e.cats.forEach(function (c) {
+          meta.push('<span class="chip chip--a">' + escapeHtml(c) + "</span>");
+        });
+        e.tags.slice(0, 3).forEach(function (t) {
+          meta.push('<span class="chip chip--b">#' + escapeHtml(t) + "</span>");
+        });
+        html +=
+          '<a class="search-hit" data-i="' + i + '" href="' + escapeHtml(e.url) + '">' +
+          '<span class="search-hit__title">' + highlight(e.title, terms) + "</span>" +
+          (e.excerpt ? '<p class="search-hit__excerpt">' + highlight(e.excerpt, terms) + "</p>" : "") +
+          '<span class="search-hit__meta">' + meta.join("") + "</span>" +
+          "</a>";
+      });
+      searchResults.innerHTML = html;
+    }
+
+    function setActive(next) {
+      var nodes = searchResults.querySelectorAll(".search-hit");
+      if (!nodes.length) return;
+      if (activeIndex >= 0 && nodes[activeIndex]) nodes[activeIndex].classList.remove("is-active");
+      activeIndex = (next + nodes.length) % nodes.length;
+      nodes[activeIndex].classList.add("is-active");
+      nodes[activeIndex].scrollIntoView({ block: "nearest" });
+    }
+
+    function openSearch() {
+      searchModal.classList.add("is-open");
+      searchModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("is-search-open");
+      setTimeout(function () { searchInput.focus(); }, 30);
+    }
+
+    function closeSearch() {
+      searchModal.classList.remove("is-open");
+      searchModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("is-search-open");
+    }
+
+    function currentTerms() {
+      return searchInput.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    }
+
+    var openBtn = document.getElementById("search-open");
+    if (openBtn) openBtn.addEventListener("click", openSearch);
+
+    document.querySelectorAll("[data-search-open]").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (drawer && overlay) closeDrawer();
+        openSearch();
+      });
+    });
+
+    document.querySelectorAll("[data-search-close]").forEach(function (el) {
+      el.addEventListener("click", closeSearch);
+    });
+    var closeBtn = document.getElementById("search-close");
+    if (closeBtn) closeBtn.addEventListener("click", closeSearch);
+
+    var timer = null;
+    searchInput.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { render(currentTerms()); }, 90);
+    });
+
+    searchInput.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActive(activeIndex + 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActive(activeIndex - 1);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        var target = activeIndex >= 0 ? hits[activeIndex] : hits[0];
+        if (target) window.location.href = target.url;
+      } else if (e.key === "Escape") {
+        closeSearch();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      // Ctrl/⌘ + K 唤起；"/" 在非输入状态下唤起
+      var tag = (e.target && e.target.tagName) || "";
+      var typing = tag === "INPUT" || tag === "TEXTAREA" || (e.target && e.target.isContentEditable);
+
+      if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        if (searchModal.classList.contains("is-open")) closeSearch();
+        else openSearch();
+      } else if (e.key === "/" && !typing) {
+        e.preventDefault();
+        openSearch();
+      } else if (e.key === "Escape" && searchModal.classList.contains("is-open")) {
+        closeSearch();
+      }
+    });
+  }
 })();

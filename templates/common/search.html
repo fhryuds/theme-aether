@@ -1,0 +1,44 @@
+<th:block th:fragment="search" xmlns:th="http://www.thymeleaf.org">
+  <!-- 搜索弹层 -->
+  <div class="search-modal" id="search-modal" aria-hidden="true">
+    <div class="search-modal__backdrop" data-search-close></div>
+    <div class="search-modal__panel" role="dialog" aria-modal="true" aria-label="搜索文章">
+      <div class="search-modal__head">
+        <svg class="search-modal__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="m20.5 20.5-4.2-4.2"/>
+        </svg>
+        <input class="search-modal__input" id="search-input" type="text"
+               placeholder="搜索文章标题、摘要、分类或标签…"
+               autocomplete="off" spellcheck="false"/>
+        <button class="search-modal__close" id="search-close" type="button" aria-label="关闭搜索">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="6" y1="6" x2="18" y2="18"/>
+            <line x1="18" y1="6" x2="6" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="search-modal__hint" id="search-hint">输入关键词开始搜索，支持多个关键词（空格分隔）</div>
+      <div class="search-modal__body" id="search-results"></div>
+      <div class="search-modal__foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+        <span><kbd>Enter</kbd> 打开</span>
+        <span><kbd>Esc</kbd> 关闭</span>
+        <span class="search-modal__count" id="search-count"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 搜索索引：渲染期由 Halo 注入，前端即时检索，无需后端接口 -->
+  <div class="search-index" id="aether-search-data" hidden>
+    <a th:each="p : ${postFinder.listAll()}"
+       th:href="${p.status.permalink}"
+       th:attr="data-date=${#dates.format(p.spec.publishTime, 'yyyy-MM-dd')}">
+      <span class="s-title" th:text="${p.spec.title}"></span>
+      <span class="s-excerpt" th:text="${p.status.excerpt}"></span>
+      <span class="s-cat" th:each="c : ${p.categories}" th:text="${c.spec.displayName}"></span>
+      <span class="s-tag" th:each="t : ${p.tags}" th:text="${t.spec.displayName}"></span>
+    </a>
+  </div>
+</th:block>

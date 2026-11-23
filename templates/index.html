@@ -32,7 +32,10 @@
   </section>
 
   <!-- 文章列表 + 侧边栏 -->
-  <div class="index-layout">
+  <div class="index-layout" th:with="timeSort=${theme.config?.layout?.index_sort_by_time != false},
+                                      pg=${posts.page > 0 ? posts.page : 1},
+                                      ps=${posts.size > 0 ? posts.size : 10},
+                                      shown=${timeSort ? postFinder.list({page: pg, size: ps, sort: {'spec.publishTime,desc'}}) : posts}">
     <!-- 主内容区 -->
     <div class="index-layout__main">
       <div class="section-head">
@@ -40,7 +43,7 @@
         <a class="section-head__more" th:href="@{${site.url} + '/archives'}">查看全部 →</a>
       </div>
 
-      <th:block th:if="${#lists.isEmpty(posts.items)}">
+      <th:block th:if="${#lists.isEmpty(shown.items)}">
         <div class="empty">
           <div class="empty__icon">✎</div>
           <p>还没有文章，敬请期待。</p>
@@ -49,11 +52,11 @@
 
       <!-- 布局模式：staggered = 双栏错落（默认），grid = 均匀网格 -->
       <div class="post-grid post-grid--staggered"
-           th:if="${not #lists.isEmpty(posts.items)}">
-        <th:block th:each="post, st : ${posts.items}">
+           th:if="${not #lists.isEmpty(shown.items)}">
+        <th:block th:each="post, st : ${shown.items}">
           <!-- 首篇：大卡片（跨两列） -->
           <article class="post-card post-card--feature"
-                   th:if="${posts.first and st.first}">
+                   th:if="${shown.first and st.first}">
             <a class="post-card__media" th:href="${post.status.permalink}">
               <span class="post-card__badge">最新发布</span>
               <img th:if="${post.spec.cover}" th:src="${post.spec.cover}" th:alt="${post.spec.title}"/>
@@ -81,7 +84,7 @@
           </article>
 
           <!-- 普通卡片 -->
-          <article class="post-card" th:unless="${posts.first and st.first}">
+          <article class="post-card" th:unless="${shown.first and st.first}">
             <a class="post-card__media" th:href="${post.status.permalink}">
               <img th:if="${post.spec.cover}" th:src="${post.spec.cover}" th:alt="${post.spec.title}"/>
               <span class="post-card__media--empty" th:unless="${post.spec.cover}"
